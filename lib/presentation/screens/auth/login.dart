@@ -17,18 +17,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            height: double.infinity,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                  Colors.blue.shade400,
-                  const Color.fromARGB(255, 155, 110, 206),
-                  Colors.purple,
-                ])),
-          ),
           Image.asset(
             "assets/imgs/bg4.jpeg",
             height: double.infinity,

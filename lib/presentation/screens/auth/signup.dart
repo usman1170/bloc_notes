@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zoom/presentation/constants.dart';
 import 'package:zoom/presentation/widgets/glass_widget.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -17,27 +18,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            height: double.infinity,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                  Colors.blue.shade400,
-                  const Color.fromARGB(255, 155, 110, 206),
-                  Colors.purple,
-                ])),
-          ),
           Image.asset(
             "assets/imgs/bg4.jpeg",
             height: double.infinity,
             fit: BoxFit.cover,
           ),
-          // BackdropFilter(
-          //   filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-          //   child: const Center(child: Text("data")),
-          // ),
           Center(
             child: GlassWidget(
               height: 420,
@@ -96,9 +81,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: const Text(
                       "Already have an Account? Login",
                       style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: .4,
-                        fontSize: 14,
                         color: Colors.white,
                       ),
                     ),
@@ -135,16 +117,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
         prefixIcon: ispassword
             ? const Icon(
                 Icons.lock,
-                color: Colors.purple,
+                color: mainColor,
               )
             : isname
                 ? const Icon(
                     Icons.person,
-                    color: Colors.purple,
+                    color: mainColor,
                   )
                 : const Icon(
                     Icons.email,
-                    color: Colors.purple,
+                    color: mainColor,
                   ),
         suffixIcon: ispassword
             ? Padding(
@@ -153,7 +135,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   onTap: () {},
                   child: const Icon(
                     Icons.visibility,
-                    color: Colors.purple,
+                    color: mainColor,
                   ),
                 ),
               )
@@ -164,7 +146,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.purple, width: .4),
+          borderSide: const BorderSide(color: mainColor, width: .4),
         ),
       ),
     );
