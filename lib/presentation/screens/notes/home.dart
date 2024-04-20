@@ -11,10 +11,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   Apis apis = Apis();
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +20,7 @@ class _HomeState extends State<Home> {
         centerTitle: true,
       ),
       body: FutureBuilder(
-        future: apis.getPhotos(),
+        future: apis.getusers(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final data = snapshot.data;
@@ -32,6 +28,7 @@ class _HomeState extends State<Home> {
               itemCount: data!.length,
               itemBuilder: (context, index) {
                 final newData = data[index];
+                // print(newData.email);
                 return InkWell(
                   onTap: () {
                     Navigator.push(
@@ -44,19 +41,27 @@ class _HomeState extends State<Home> {
                   },
                   child: Card(
                     child: ListTile(
-                      leading: Container(
-                        height: 55,
-                        width: 55,
-                        decoration: const BoxDecoration(shape: BoxShape.circle),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: Image.network(
-                            newData.url.toString(),
-                          ),
-                        ),
+                      // leading: Container(
+                      //   height: 55,
+                      //   width: 55,
+                      //   decoration: const BoxDecoration(shape: BoxShape.circle),
+                      //   child: ClipRRect(
+                      //     borderRadius: BorderRadius.circular(50),
+                      //     child: Image.network(
+                      //       newData.url.toString(),
+                      //     ),
+                      //   ),
+                      // ),
+                      title: Text(newData.name.toString()),
+                      subtitle: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("${newData.email}"),
+                          Text("City = ${newData.address!.city}"),
+                          Text("Street = ${newData.address!.street}"),
+                        ],
                       ),
-                      title: Text(newData.id.toString()),
-                      subtitle: Text("${newData.title}"),
                     ),
                   ),
                 );
