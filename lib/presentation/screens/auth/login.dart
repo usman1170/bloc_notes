@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:zoom/presentation/screens/auth/signup.dart';
 import 'package:zoom/presentation/widgets/glass_widget.dart';
 
@@ -12,6 +13,26 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  //
+  void login(String email, password) async {
+    try {
+      Response response = await post(
+        Uri.parse("https://reqres.in/api/register"),
+        body: {
+          "email": email,
+          "password": password,
+        },
+      );
+      if (response.statusCode == 200) {
+        print("Login success");
+      } else {
+        print(response.statusCode);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,10 +43,6 @@ class _LoginScreenState extends State<LoginScreen> {
             height: double.infinity,
             fit: BoxFit.cover,
           ),
-          // BackdropFilter(
-          //   filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-          //   child: const Center(child: Text("data")),
-          // ),
           Center(
             child: GlassWidget(
               height: 420,
@@ -99,7 +116,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(
                     height: 6,
                   ),
-                  _loginButton(),
+                  _loginButton(
+                    () {
+                      login(
+                        _email.text.toString(),
+                        _password.text.toString(),
+                      );
+                    },
+                  ),
                   const SizedBox(
                     height: 16,
                   ),
@@ -164,25 +188,28 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _loginButton() {
-    return Container(
-      height: 55,
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [
-          Colors.purple.shade400,
-          Colors.purple.shade500,
-          Colors.purple.shade700,
-        ]),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: const Center(
-        child: Text(
-          "Login",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
+  Widget _loginButton(VoidCallback ontap) {
+    return InkWell(
+      onTap: ontap,
+      child: Container(
+        height: 55,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [
+            Colors.purple.shade400,
+            Colors.purple.shade500,
+            Colors.purple.shade700,
+          ]),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: const Center(
+          child: Text(
+            "Login",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),

@@ -42,6 +42,8 @@ dependencies:
   firebase_storage: ^11.7.0
   glass_kit: ^3.0.0
   http: ^1.2.1
+  modal_progress_hud_nsn: ^0.5.1
+  image_picker: ^1.1.0
 
 dev_dependencies:
   flutter_test:

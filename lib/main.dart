@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zoom/presentation/screens/notes/home.dart';
+import 'package:zoom/presentation/screens/notes/image.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: const Home(),
+      home: const ImageUploadScreen(),
     );
   }
 }

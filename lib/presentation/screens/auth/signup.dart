@@ -1,4 +1,8 @@
+// ignore_for_file: avoid_print
+
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:zoom/presentation/constants.dart';
 import 'package:zoom/presentation/widgets/glass_widget.dart';
 
@@ -13,6 +17,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _name = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  //
+  void login(String email, password) async {
+    try {
+      Response response = await post(
+        Uri.parse("https://reqres.in/api/register"),
+        body: {
+          "email": email,
+          "password": password,
+        },
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body.toString());
+        print(data);
+        print("Account Created");
+      } else {
+        print(response.statusCode);
+        print(response.toString());
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +97,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(
                     height: 16,
                   ),
-                  _signUpButton(),
+                  _signUpButton(() {
+                    login(
+                      _email.text.toString(),
+                      _password.text.toString(),
+                    );
+                  }),
                   const SizedBox(
                     height: 14,
                   ),
@@ -152,25 +184,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _signUpButton() {
-    return Container(
-      height: 55,
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [
-          Colors.purple.shade400,
-          Colors.purple.shade500,
-          Colors.purple.shade700,
-        ]),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: const Center(
-        child: Text(
-          "Login",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
+  Widget _signUpButton(VoidCallback ontap) {
+    return InkWell(
+      onTap: ontap,
+      child: Container(
+        height: 55,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [
+            Colors.purple.shade400,
+            Colors.purple.shade500,
+            Colors.purple.shade700,
+          ]),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: const Center(
+          child: Text(
+            "Login",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),
