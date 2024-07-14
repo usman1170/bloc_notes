@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:zoom/presentation/screens/auth/signup.dart';
 import 'package:zoom/presentation/widgets/glass_widget.dart';
 
@@ -13,25 +12,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  //
-  void login(String email, password) async {
-    try {
-      Response response = await post(
-        Uri.parse("https://reqres.in/api/register"),
-        body: {
-          "email": email,
-          "password": password,
-        },
-      );
-      if (response.statusCode == 200) {
-        print("Login success");
-      } else {
-        print(response.statusCode);
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,12 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 6,
                   ),
                   _loginButton(
-                    () {
-                      login(
-                        _email.text.toString(),
-                        _password.text.toString(),
-                      );
-                    },
+                    () {},
                   ),
                   const SizedBox(
                     height: 16,

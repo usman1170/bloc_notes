@@ -1,8 +1,5 @@
 // ignore_for_file: avoid_print
-
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:zoom/presentation/constants.dart';
 import 'package:zoom/presentation/widgets/glass_widget.dart';
 
@@ -17,28 +14,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _name = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  //
-  void login(String email, password) async {
-    try {
-      Response response = await post(
-        Uri.parse("https://reqres.in/api/register"),
-        body: {
-          "email": email,
-          "password": password,
-        },
-      );
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body.toString());
-        print(data);
-        print("Account Created");
-      } else {
-        print(response.statusCode);
-        print(response.toString());
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,12 +72,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(
                     height: 16,
                   ),
-                  _signUpButton(() {
-                    login(
-                      _email.text.toString(),
-                      _password.text.toString(),
-                    );
-                  }),
+                  _signUpButton(
+                    () {},
+                  ),
                   const SizedBox(
                     height: 14,
                   ),
