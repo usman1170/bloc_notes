@@ -1,6 +1,11 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zoom/presentation/constants.dart';
+import 'package:zoom/presentation/screens/auth/verify.dart';
+import 'package:zoom/presentation/widgets/dialogs.dart';
 import 'package:zoom/presentation/widgets/glass_widget.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -14,6 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _name = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -26,72 +32,121 @@ class _SignUpScreenState extends State<SignUpScreen> {
             fit: BoxFit.cover,
           ),
           Center(
-            child: GlassWidget(
-              height: 420,
-              width: 350,
-              child: Column(
-                children: [
-                  const Text(
-                    "Welcome to Notes",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 6),
-                    child: Row(
+            child: isLoading
+                ? const LoadingWidget()
+                : GlassWidget(
+                    height: 420,
+                    width: 350,
+                    child: Column(
                       children: [
-                        Text(
-                          "Enter details to Sign up.",
+                        const Text(
+                          "Welcome to Notes",
                           style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: .4,
                             color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 6),
+                          child: Row(
+                            children: [
+                              Text(
+                                "Enter details to Sign up.",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: .4,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 14,
+                        ),
+                        _inputField(isname: true),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        _inputField(),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        _inputField(ispassword: true),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        _signUpButton(
+                          () async {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            FocusScope.of(context).unfocus();
+                            final email = _email.text.toString();
+                            final password = _password.text.toString();
+                            try {
+                              final credentials = await FirebaseAuth.instance
+                                  .createUserWithEmailAndPassword(
+                                email: email,
+                                password: password,
+                              )
+                                  .then((value) {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const VerifyScreen(),
+                                    ));
+                              });
+                              print(credentials);
+                            } on FirebaseAuthException catch (e) {
+                              if (e.code == "weak-password") {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                Dialogs().errorDialog(context, "Error Occured",
+                                    "Password should be at least 6 characters");
+                                log("Password should be at least 6 characters");
+                              } else if (e.code == "email-already-in-use") {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                Dialogs().errorDialog(context, "Error Occured",
+                                    "The email address is already in use by another account");
+                                log("The email address is already in use by another account");
+                              } else {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                print(e.code);
+                              }
+                            }
+                          },
+                        ),
+                        const SizedBox(
+                          height: 14,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text(
+                            "Already have an Account? Login",
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 14,
-                  ),
-                  _inputField(isname: true),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  _inputField(),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  _inputField(ispassword: true),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  _signUpButton(
-                    () {},
-                  ),
-                  const SizedBox(
-                    height: 14,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text(
-                      "Already have an Account? Login",
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
           )
         ],
       ),
@@ -105,6 +160,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           : isname
               ? _name
               : _email,
+      obscureText: ispassword,
       decoration: InputDecoration(
         fillColor: Colors.white.withOpacity(.5),
         filled: true,
@@ -136,7 +192,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ? Padding(
                 padding: const EdgeInsets.only(right: 6),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () async {},
                   child: const Icon(
                     Icons.visibility,
                     color: mainColor,
@@ -172,7 +228,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
         child: const Center(
           child: Text(
-            "Login",
+            "Sign Up",
             style: TextStyle(
               color: Colors.white,
               fontSize: 22,

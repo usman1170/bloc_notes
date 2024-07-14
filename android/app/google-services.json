@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "83632946216",
+    "project_id": "chatty-36ea0",
+    "storage_bucket": "chatty-36ea0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:83632946216:android:2b40f5565d62d1c121891d",
+        "android_client_info": {
+          "package_name": "com.example.zoom"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_qJq9WCwKG8Vrc3vpHzS2KwytQTIfCrU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

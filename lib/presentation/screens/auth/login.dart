@@ -1,5 +1,11 @@
+// ignore_for_file: avoid_print, use_build_context_synchronously
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zoom/presentation/screens/auth/signup.dart';
+import 'package:zoom/presentation/screens/auth/verify.dart';
+import 'package:zoom/presentation/screens/notes/home.dart';
+import 'package:zoom/presentation/widgets/dialogs.dart';
 import 'package:zoom/presentation/widgets/glass_widget.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,6 +18,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -24,92 +31,138 @@ class _LoginScreenState extends State<LoginScreen> {
             fit: BoxFit.cover,
           ),
           Center(
-            child: GlassWidget(
-              height: 420,
-              width: 350,
-              child: Column(
-                children: [
-                  const Text(
-                    "Welcome Again!",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 6),
-                    child: Row(
+            child: isLoading
+                ? const LoadingWidget()
+                : GlassWidget(
+                    height: 420,
+                    width: 350,
+                    child: Column(
                       children: [
-                        Text(
-                          "Enter details to Login.",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: .4,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 14,
-                  ),
-                  _inputField(),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  _inputField(ispassword: true),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SignUpScreen(),
-                                ));
-                          },
-                          child: const Text(
-                            "Create account?",
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
                         const Text(
-                          "Forgot password?",
+                          "Welcome Again!",
                           style: TextStyle(
                             color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 6),
+                          child: Row(
+                            children: [
+                              Text(
+                                "Enter details to Login.",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: .4,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 14,
+                        ),
+                        _inputField(),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        _inputField(ispassword: true),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const SignUpScreen(),
+                                      ));
+                                },
+                                child: const Text(
+                                  "Create account?",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              const Text(
+                                "Forgot password?",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 6,
+                        ),
+                        _loginButton(
+                          () async {
+                            FocusScope.of(context).unfocus();
+                            setState(() {
+                              isLoading = true;
+                            });
+                            final email = _email.text.toString();
+                            final password = _password.text.toString();
+                            try {
+                              final credentials = await FirebaseAuth.instance
+                                  .signInWithEmailAndPassword(
+                                email: email,
+                                password: password,
+                              )
+                                  .then((value) {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const HomeScreen(),
+                                    ));
+                              });
+                              print(credentials);
+                            } on FirebaseAuthException catch (e) {
+                              if (e.code == "invalid-credential") {
+                                setState(() {
+                                  isLoading = false;
+                                });
+
+                                Dialogs().errorDialog(context, "Error Occured",
+                                    "Invalid Credentials");
+                                print("Invalid Credentials");
+                              } else {
+                                setState(() {
+                                  isLoading = false;
+                                });
+
+                                Dialogs().errorDialog(context, "Error Occured",
+                                    "Something wents wrong");
+                                print(e.code);
+                              }
+                            }
+                          },
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        _divider(),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        _otherLogin(),
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 6,
-                  ),
-                  _loginButton(
-                    () {},
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  _divider(),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  _otherLogin(),
-                ],
-              ),
-            ),
           )
         ],
       ),
@@ -121,6 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }) {
     return TextField(
       controller: ispassword ? _password : _email,
+      obscureText: ispassword,
       decoration: InputDecoration(
         fillColor: Colors.white.withOpacity(.5),
         filled: true,
