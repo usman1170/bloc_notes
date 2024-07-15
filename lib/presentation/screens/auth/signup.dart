@@ -93,7 +93,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   .createUserWithEmailAndPassword(
                                 email: email,
                                 password: password,
-                              )
+                              );
+                              await FirebaseAuth.instance.currentUser!
+                                  .sendEmailVerification()
                                   .then((value) {
                                 setState(() {
                                   isLoading = false;
@@ -125,6 +127,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 setState(() {
                                   isLoading = false;
                                 });
+
+                                Dialogs().errorDialog(context, "Error Occured",
+                                    "Something wents wrong");
                                 print(e.code);
                               }
                             }

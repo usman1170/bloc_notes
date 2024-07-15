@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zoom/presentation/constants.dart';
 import 'package:zoom/presentation/routes.dart';
-import 'package:zoom/presentation/screens/auth/login.dart';
 import 'package:zoom/presentation/widgets/auth_dialogs.dart';
 import 'package:zoom/presentation/widgets/dialogs.dart';
 

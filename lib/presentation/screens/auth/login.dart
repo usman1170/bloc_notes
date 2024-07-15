@@ -124,11 +124,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                 setState(() {
                                   isLoading = false;
                                 });
-                                Navigator.pushReplacement(
+                                if (FirebaseAuth
+                                    .instance.currentUser!.emailVerified) {
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => const HomeScreen(),
-                                    ));
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const VerifyScreen(),
+                                    ),
+                                  );
+                                }
                               });
                               print(credentials);
                             } on FirebaseAuthException catch (e) {

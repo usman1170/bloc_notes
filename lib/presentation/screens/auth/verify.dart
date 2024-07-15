@@ -79,7 +79,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                                   color: mainColor,
                                 )),
                             child: Text(
-                              "We have sent you email for verification, if you didn't found email please check your spam folder",
+                              "We have sent you verification email, or check your spam folder. If you didn't receive yhe email please click the button to get email",
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.grey.shade700,
@@ -127,7 +127,8 @@ class _VerifyScreenState extends State<VerifyScreen> {
                         const SizedBox(
                           height: 8,
                         ),
-                        _loginButton(() {
+                        _loginButton(() async {
+                          await FirebaseAuth.instance.signOut();
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
