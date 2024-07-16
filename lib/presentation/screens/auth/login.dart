@@ -1,7 +1,8 @@
 // ignore_for_file: avoid_print, use_build_context_synchronously
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:zoom/data/services/auth/auth_exceptions.dart';
+import 'package:zoom/data/services/auth/auth_services.dart';
 import 'package:zoom/presentation/screens/auth/signup.dart';
 import 'package:zoom/presentation/screens/auth/verify.dart';
 import 'package:zoom/presentation/screens/notes/home.dart';
@@ -115,8 +116,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             final email = _email.text.toString();
                             final password = _password.text.toString();
                             try {
-                              final credentials = await FirebaseAuth.instance
-                                  .signInWithEmailAndPassword(
+                              await AuthServices.firebase()
+                                  .login(
                                 email: email,
                                 password: password,
                               )
@@ -124,8 +125,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 setState(() {
                                   isLoading = false;
                                 });
-                                if (FirebaseAuth
-                                    .instance.currentUser!.emailVerified) {
+                                final user =
+                                    AuthServices.firebase().currentUser;
+                                if (user!.isEmailVerified) {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
@@ -142,25 +144,31 @@ class _LoginScreenState extends State<LoginScreen> {
                                   );
                                 }
                               });
-                              print(credentials);
-                            } on FirebaseAuthException catch (e) {
-                              if (e.code == "invalid-credential") {
-                                setState(() {
-                                  isLoading = false;
-                                });
+                            } on WrongCredentialsAuthException {
+                              setState(() {
+                                isLoading = false;
+                              });
+                              Dialogs().errorDialog(context, "Error Occured",
+                                  "Invalid Credentials");
+                            } on InvalidEmailAuthException {
+                              setState(() {
+                                isLoading = false;
+                              });
+                              Dialogs().errorDialog(
+                                  context, "Error Occured", "Invalid Email");
+                            } on InternetNotFoundAuthException {
+                              setState(() {
+                                isLoading = false;
+                              });
+                              Dialogs().errorDialog(context, "Error Occured",
+                                  "Please check your internet connectivity");
+                            } on GeneralAuthException {
+                              setState(() {
+                                isLoading = false;
+                              });
 
-                                Dialogs().errorDialog(context, "Error Occured",
-                                    "Invalid Credentials");
-                                print("Invalid Credentials");
-                              } else {
-                                setState(() {
-                                  isLoading = false;
-                                });
-
-                                Dialogs().errorDialog(context, "Error Occured",
-                                    "Something wents wrong");
-                                print(e.code);
-                              }
+                              Dialogs().errorDialog(context, "Error Occured",
+                                  "Something wents wrong");
                             }
                           },
                         ),

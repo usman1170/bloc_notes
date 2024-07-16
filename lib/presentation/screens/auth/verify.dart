@@ -1,7 +1,7 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, avoid_print
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:zoom/data/services/auth/auth_services.dart';
 import 'package:zoom/presentation/constants.dart';
 import 'package:zoom/presentation/screens/auth/login.dart';
 import 'package:zoom/presentation/widgets/dialogs.dart';
@@ -96,20 +96,18 @@ class _VerifyScreenState extends State<VerifyScreen> {
                           setState(() {
                             isLoading = true;
                           });
-                          final user = FirebaseAuth.instance.currentUser;
                           try {
-                            await user!.sendEmailVerification().then((value) {
+                            await AuthServices.firebase()
+                                .sendEmailVerification()
+                                .then((value) {
                               Dialogs().errorDialog(context, 'Email Sent',
                                   "Please check your mail box and verify yourself");
                             });
-                          } on FirebaseAuthException catch (e) {
-                            if (e.code == "network-request-failed") {
-                              setState(() {
-                                isLoading = false;
-                              });
-                              Dialogs().errorDialog(
-                                  context, 'Error Occured', "Network Error");
-                            }
+                          } catch (e) {
+                            setState(() {
+                              isLoading = false;
+                            });
+                            print(e);
                           }
                           setState(() {
                             isLoading = false;
@@ -128,7 +126,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                           height: 8,
                         ),
                         _loginButton(() async {
-                          await FirebaseAuth.instance.signOut();
+                          await AuthServices.firebase().logOut();
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(

@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_print, use_build_context_synchronously
 import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:zoom/data/services/auth/auth_exceptions.dart';
+import 'package:zoom/data/services/auth/auth_services.dart';
 import 'package:zoom/presentation/constants.dart';
 import 'package:zoom/presentation/screens/auth/verify.dart';
 import 'package:zoom/presentation/widgets/dialogs.dart';
@@ -89,49 +89,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             final email = _email.text.toString();
                             final password = _password.text.toString();
                             try {
-                              final credentials = await FirebaseAuth.instance
-                                  .createUserWithEmailAndPassword(
+                              await AuthServices.firebase().createUser(
                                 email: email,
                                 password: password,
                               );
-                              await FirebaseAuth.instance.currentUser!
+                              await AuthServices.firebase()
                                   .sendEmailVerification()
                                   .then((value) {
                                 setState(() {
                                   isLoading = false;
                                 });
                                 Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const VerifyScreen(),
-                                    ));
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const VerifyScreen(),
+                                  ),
+                                );
                               });
-                              print(credentials);
-                            } on FirebaseAuthException catch (e) {
-                              if (e.code == "weak-password") {
-                                setState(() {
-                                  isLoading = false;
-                                });
-                                Dialogs().errorDialog(context, "Error Occured",
-                                    "Password should be at least 6 characters");
-                                log("Password should be at least 6 characters");
-                              } else if (e.code == "email-already-in-use") {
-                                setState(() {
-                                  isLoading = false;
-                                });
-                                Dialogs().errorDialog(context, "Error Occured",
-                                    "The email address is already in use by another account");
-                                log("The email address is already in use by another account");
-                              } else {
-                                setState(() {
-                                  isLoading = false;
-                                });
+                            } on WeakPasswordAuthException {
+                              setState(() {
+                                isLoading = false;
+                              });
+                              Dialogs().errorDialog(context, "Error Occured",
+                                  "Password should be at least 6 characters");
+                              log("Password should be at least 6 characters");
+                            } on EmailAlreadyUsedAuthException {
+                              setState(() {
+                                isLoading = false;
+                              });
+                              Dialogs().errorDialog(context, "Error Occured",
+                                  "The email address is already in use by another account");
+                              log("The email address is already in use by another account");
+                            } on GeneralAuthException {
+                              setState(() {
+                                isLoading = false;
+                              });
 
-                                Dialogs().errorDialog(context, "Error Occured",
-                                    "Something wents wrong");
-                                print(e.code);
-                              }
+                              Dialogs().errorDialog(context, "Error Occured",
+                                  "Something wents wrong");
                             }
                           },
                         ),
